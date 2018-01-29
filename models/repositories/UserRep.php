@@ -37,7 +37,7 @@ class UserRep extends Repository
   public function getByLiterals($column, $literals, $columnOrder, $direction='')
   {
       $sql = "SELECT * FROM {$this->tableName} WHERE {$column} LIKE :literals";
-      $params =['literals' => '%'.$literals.'%'];
+      $params =[':literals' => '%'.$literals.'%'];
       if($columnOrder !='none'){
             $sql = "SELECT * FROM {$this->tableName} WHERE {$column} LIKE :literals ORDER BY {$columnOrder} {$direction}";
       }

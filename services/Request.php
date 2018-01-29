@@ -3,7 +3,7 @@
 
 namespace app\services;
 
-class RequestNotMatchException extends \Exception{}
+
 
 class Request
 {
@@ -30,21 +30,26 @@ class Request
             if(preg_match_all($pattern, $this->requestString, $matches)){
                 $this->controllerName = $matches['controller'][0];
                 $this->actionName = $matches['action'][0];
-                $this->params = $_REQUEST;
-                foreach (explode("&", $matches['params'][0]) as $param){
-                    $p = explode("=",$param);
-                    $this->params[$p[0]] = $p[1];
+
+                if(!empty($_REQUEST)){
+                    $this->params = $_REQUEST;
+                    foreach (explode("&", $matches['params'][0]) as $param){
+                        $p = explode("=",$param);
+                        if(!empty($p[0])){
+                          $this->params[$p[0]] = $p[1];
+                        }
+
+                    }
                 }
                 return;
             }
-            // throw new RequestNotMatchException("Неправильный запрос!");
         }
 
     }
 
     public function getControllerName()
     {
-        return $this->controllerName;
+        return strtolower($this->controllerName);
     }
 
     public function getActionName()

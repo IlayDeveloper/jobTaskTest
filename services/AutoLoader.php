@@ -6,9 +6,10 @@ class AutoLoader
 {
   public function loadClass ($className)
   {
+      // throw new \Exception("Go go go");
       $path = str_replace('app', App::call()->config['ROOT_DIR'], $className);
       $path = str_replace('\\', '/', $path);
-      echo $path . "<br>";
-      require $path . '.php';
+      include $path . '.php';
+
   }
 }

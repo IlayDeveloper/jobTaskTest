@@ -19,4 +19,28 @@ class UserRep extends Repository
       $class = $this->entityClass;
       return $this->getConnect()->fetchObject($sql, $params, $class);
   }
+
+  public function getByLogin($login)
+  {
+      $sql = "SELECT * FROM users WHERE login = :login";
+      $params = [':login' => $login];
+      $class = $this->entityClass;
+      return $this->getConnect()->fetchObject($sql, $params, $class);
+  }
+
+  public function getAllSort($column, $direction='DESC')
+  {
+      $sql = "SELECT * FROM {$this->tableName} ORDER BY {$column} {$direction}";
+      return $this->getConnect()->fetchAll($sql);
+  }
+
+  public function getByLiterals($column, $literals, $columnOrder, $direction='')
+  {
+      $sql = "SELECT * FROM {$this->tableName} WHERE {$column} LIKE :literals";
+      $params =['literals' => '%'.$literals.'%'];
+      if($columnOrder !='none'){
+            $sql = "SELECT * FROM {$this->tableName} WHERE {$column} LIKE :literals ORDER BY {$columnOrder} {$direction}";
+      }
+      return $this->getConnect()->fetchAll($sql, $params);
+  }
 }

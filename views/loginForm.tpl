@@ -3,3 +3,4 @@
   <input name='password' placeholder="password"><br>
   <input type="submit" value="login"><a href="/auth/signup">signup</a>
 </form>
+<?=$errors?>

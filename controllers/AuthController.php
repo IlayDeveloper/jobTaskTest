@@ -7,34 +7,43 @@ class AuthController extends Controller
 {
     public function actionIndex()
     {
+        $params = [];
+        $params ['errors'] = '';
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
             $login = $_POST['login'];
             $password = $_POST['password'];
             $success = (new Auth())->login($login, $password);
+            $params ['errors'] = 'Неверный логин или пароль!';
             if($success){
                 $this->redirect('profile');
             }
         }
         $template = 'loginForm.tpl';
-        $this->renderer($template);
-        // $sessionLifeTime = \app\base\App::call()->config['SESSION_LIFE_TIME'];
-        // $timeDilay = date("Y-m-d H:i:s", time() - $sessionLifeTime);
-        // var_dump($timeDilay);
+        $this->renderer($template, $params);
     }
 
     public function actionSignup()
     {
+        $params = [];
+        $params ['errors'] = '';
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
             $id = null;
+            $role = 0;
             extract($_POST);
-            $user = new User($id, $login, $password, $firstName, $lastName, $mail);
-            $success = (new Auth())->signup($user);
-            if($success){
+            $user = new User($id, $login, $password, $firstName, $lastName, $mail, $role);
+            $result = (new Auth())->signup($user);
+
+            if($result['status']){
                 $this->redirect('profile');
             }
+            $error = "Следующие поля заполнены некорректно:<br>";
+            foreach ($result['errors'] as $value) {
+                $error .= "<br>{$value}";
+            }
+            $params ['errors'] = $error;
         }
         $template = 'signupForm.tpl';
-        $this->renderer($template);
+        $this->renderer($template, $params);
     }
 
     public function actionLogout()

@@ -2,6 +2,7 @@
 namespace app\services;
 use app\models\repositories\SessionRep;
 use app\models\repositories\UserRep;
+use app\services\Validation;
 use app\models\User;
 use app\base\App;
 
@@ -9,32 +10,34 @@ class Auth
 {
     public function login($login, $pass)
     {
-        $login = $this->validateString($login);
-        $pass = $this->validateString($pass);
-        $user = (new UserRep())->getByLoginPass($login, $pass);
+        $user = (new UserRep())->getByLogin($login);
         if(!$user){
             return false;
         }
-        $this->openSession($user);
-        return true;
+        if((new Validation())->passVerify($pass, $user->pass)){
+            $this->openSession($user);
+            return true;
+        }
+        return false;
     }
 
     public function logout()
     {
         (new SessionRep())->deleteSessions($_SESSION['sid']);
         $this->sessionDestroy();
-        // unset($_SESSION['sid']);
         return true;
     }
 
     public function signup(User $user)
     {
-        $user = $this->validateUser($user);
-        $rep = new UserRep();
-        $rep->create($user);
-        $user = $rep->getByLoginPass($user->login, $user->pass);
-        $this->openSession($user);
-        return true;
+        $result = (new Validation())->validateUser($user);
+        if($result['status']){
+            $rep = new UserRep();
+            $rep->create($result['user']);
+            $newUser = $rep->getByLoginPass($user->login, $user->pass);
+            $this->openSession($newUser);
+        }
+        return $result;
     }
 
     public function getSessionId()
@@ -64,15 +67,6 @@ class Auth
             $sid .= $chars[mt_rand(0, strlen($chars) - 1)];
         }
         return $sid;
-    }
-
-    protected function validateString($str)
-    {
-        return $str;
-    }
-    protected function validateUser($user)
-    {
-        return $user;
     }
 
     public function sessionStart()

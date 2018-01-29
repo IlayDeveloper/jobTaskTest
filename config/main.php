@@ -5,6 +5,9 @@ return [
   'CONTROLLER_NAMESPACES' => 'app\controllers\\',
   'SESSION_LIFE_TIME' => 60*20,
   'SESSION_REGENERATE_ID_TIME' => 60*2,
+  'CONTROLLERS' => [
+      'auth' => 1, 'front' => 1, 'profile' => 1, 'userslist' => 1, 
+  ],
 
   'classes' => [
       'mainController' => [
